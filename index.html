@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel - Gestão de Quartos</title>
+
+<style>
+
+body{
+font-family: Arial;
+margin:0;
+background:#f4f6f9;
+}
+
+header{
+background:#2c3e50;
+color:white;
+padding:15px;
+text-align:center;
+}
+
+.container{
+display:flex;
+}
+
+.sidebar{
+width:220px;
+background:#34495e;
+height:100vh;
+color:white;
+padding-top:20px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+padding:12px;
+text-decoration:none;
+}
+
+.sidebar a:hover{
+background:#2c3e50;
+}
+
+.content{
+flex:1;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:8px;
+box-shadow:0 0 5px rgba(0,0,0,0.1);
+}
+
+input,select{
+padding:8px;
+margin:5px;
+width:200px;
+}
+
+button{
+padding:8px 15px;
+background:#27ae60;
+color:white;
+border:none;
+cursor:pointer;
+border-radius:4px;
+}
+
+button:hover{
+background:#219150;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+table th, table td{
+border:1px solid #ddd;
+padding:10px;
+text-align:center;
+}
+
+table th{
+background:#2c3e50;
+color:white;
+}
+
+.delete{
+background:#e74c3c;
+}
+
+.delete:hover{
+background:#c0392b;
+}
+
+.edit{
+background:#f39c12;
+}
+
+.edit:hover{
+background:#d68910;
+}
+
+.section{
+display:none;
+}
+
+.active{
+display:block;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Painel Administrativo - Gestão de Quartos</h2>
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<a href="#" onclick="mostrar('dashboard')">Dashboard</a>
+<a href="#" onclick="mostrar('quartos')">Gestão de Quartos</a>
+<a href="#" onclick="mostrar('precos')">Gestão de Preços</a>
+<a href="#" onclick="mostrar('manutencao')">Manutenção</a>
+
+</div>
+
+<div class="content">
+
+<div id="dashboard" class="section active card">
+<h3>Dashboard</h3>
+<p>Bem-vindo ao sistema de gestão de quartos.</p>
+</div>
+
+
+<div id="quartos" class="section card">
+
+<h3>Adicionar Quarto</h3>
+
+<input type="text" id="numero" placeholder="Número do quarto">
+<select id="tipo">
+<option>Normal</option>
+<option>Luxo</option>
+<option>Suite</option>
+</select>
+
+<select id="estado">
+<option>Disponível</option>
+<option>Ocupado</option>
+<option>Manutenção</option>
+</select>
+
+<button onclick="addQuarto()">Adicionar</button>
+
+<table>
+
+<thead>
+<tr>
+<th>Nº</th>
+<th>Tipo</th>
+<th>Estado</th>
+<th>Ações</th>
+</tr>
+</thead>
+
+<tbody id="listaQuartos"></tbody>
+
+</table>
+
+</div>
+
+
+<div id="precos" class="section card">
+
+<h3>Definir Preço</h3>
+
+<select id="tipoPreco">
+<option>Normal</option>
+<option>Luxo</option>
+<option>Suite</option>
+</select>
+
+<input type="number" id="valorPreco" placeholder="Preço">
+
+<button onclick="addPreco()">Guardar</button>
+
+<table>
+
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Preço</th>
+<th>Ação</th>
+</tr>
+</thead>
+
+<tbody id="listaPrecos"></tbody>
+
+</table>
+
+</div>
+
+
+<div id="manutencao" class="section card">
+
+<h3>Registar Manutenção</h3>
+
+<input type="text" id="quartoManut" placeholder="Nº do Quarto">
+
+<input type="text" id="descricao" placeholder="Descrição do problema">
+
+<button onclick="addManut()">Registar</button>
+
+<table>
+
+<thead>
+<tr>
+<th>Quarto</th>
+<th>Problema</th>
+<th>Ação</th>
+</tr>
+</thead>
+
+<tbody id="listaManut"></tbody>
+
+</table>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+function mostrar(sec){
+
+let sections=document.querySelectorAll('.section');
+
+sections.forEach(s=>{
+s.classList.remove('active')
+})
+
+document.getElementById(sec).classList.add('active')
+
+}
+
+
+let quartos=[];
+
+function addQuarto(){
+
+let numero=document.getElementById("numero").value
+let tipo=document.getElementById("tipo").value
+let estado=document.getElementById("estado").value
+
+let quarto={numero,tipo,estado}
+
+quartos.push(quarto)
+
+mostrarQuartos()
+
+}
+
+function mostrarQuartos(){
+
+let tabela=document.getElementById("listaQuartos")
+
+tabela.innerHTML=""
+
+quartos.forEach((q,index)=>{
+
+tabela.innerHTML+=`
+
+<tr>
+
+<td>${q.numero}</td>
+<td>${q.tipo}</td>
+<td>${q.estado}</td>
+
+<td>
+
+<button class="edit" onclick="editarQuarto(${index})">Editar</button>
+
+<button class="delete" onclick="removerQuarto(${index})">Excluir</button>
+
+</td>
+
+</tr>
+
+`
+
+})
+
+}
+
+function removerQuarto(i){
+
+quartos.splice(i,1)
+
+mostrarQuartos()
+
+}
+
+function editarQuarto(i){
+
+let q=quartos[i]
+
+document.getElementById("numero").value=q.numero
+document.getElementById("tipo").value=q.tipo
+document.getElementById("estado").value=q.estado
+
+quartos.splice(i,1)
+
+mostrarQuartos()
+
+}
+
+
+
+let precos=[]
+
+function addPreco(){
+
+let tipo=document.getElementById("tipoPreco").value
+let valor=document.getElementById("valorPreco").value
+
+precos.push({tipo,valor})
+
+mostrarPrecos()
+
+}
+
+function mostrarPrecos(){
+
+let tabela=document.getElementById("listaPrecos")
+
+tabela.innerHTML=""
+
+precos.forEach((p,i)=>{
+
+tabela.innerHTML+=`
+
+<tr>
+
+<td>${p.tipo}</td>
+<td>${p.valor}</td>
+
+<td>
+
+<button class="delete" onclick="removerPreco(${i})">Excluir</button>
+
+</td>
+
+</tr>
+
+`
+
+})
+
+}
+
+function removerPreco(i){
+
+precos.splice(i,1)
+
+mostrarPrecos()
+
+}
+
+
+
+let manut=[]
+
+function addManut(){
+
+let quarto=document.getElementById("quartoManut").value
+let desc=document.getElementById("descricao").value
+
+manut.push({quarto,desc})
+
+mostrarManut()
+
+}
+
+function mostrarManut(){
+
+let tabela=document.getElementById("listaManut")
+
+tabela.innerHTML=""
+
+manut.forEach((m,i)=>{
+
+tabela.innerHTML+=`
+
+<tr>
+
+<td>${m.quarto}</td>
+<td>${m.desc}</td>
+
+<td>
+
+<button class="delete" onclick="removerManut(${i})">Excluir</button>
+
+</td>
+
+</tr>
+
+`
+
+})
+
+}
+
+function removerManut(i){
+
+manut.splice(i,1)
+
+mostrarManut()
+
+}
+
+</script>
+
+</body>
+</html>
